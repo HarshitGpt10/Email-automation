@@ -1,0 +1,329 @@
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
+from tkinter import *
+
+#Main Screen Init
+master= Tk()
+master.title = 'Custom Email App'
+
+#Functions
+def send_email(sender_email, sender_password, recipient_email, cc, subject, message):
+    # Create a multipart message object
+    msg = MIMEMultipart('alternative')
+    msg['From'] = sender_email
+    msg['To'] = recipient_email
+    msg['CC'] = ",".join(cc)
+    msg['Subject'] = subject
+
+    # Create both plain text and HTML versions of the email
+    text = 'This is a plain text email.'
+    html = f'<html><body> {message}</h1></body></html>'
+
+    # Attach the plain text and HTML versions to the email
+    part1 = MIMEText(text, 'plain')
+    part2 = MIMEText(html, 'html')
+    msg.attach(part1)
+    msg.attach(part2)
+
+    # SMTP server settings for Outlook
+    smtp_server = 'smtp-mail.outlook.com'
+    smtp_port = 587
+
+    try:
+        recipient_emails = [recipient_email] + cc
+        # recipient_emails = [recipient_email]
+        # Create a secure SSL/TLS connection to the SMTP server
+        server = smtplib.SMTP(smtp_server, smtp_port)
+        server.starttls()
+
+        # Login to your Outlook email account
+        server.login(sender_email, sender_password)
+
+        # Send the email
+        server.sendmail(sender_email, recipient_emails, msg.as_string())
+
+        # print("Email sent successfully!")
+        notif.config(text="Email has been sent successfully", fg="green")
+
+    except smtplib.SMTPException as e:
+        # print("Error sending email:", str(e))
+        notif.config(text="Error sending email", fg="red")
+
+    finally:
+        # Close the connection to the SMTP server
+        server.quit()
+
+def reset():
+  usernameEntry.delete(0,'end')
+  passwordEntry.delete(0,'end')
+  idEntry.delete(0,'end')
+  blockEntry.delete(0,'end')
+  roomEntry.delete(0, 'end')
+  mobEntry.delete(0, 'end')
+  chooseEntry.delete(0, 'end')
+  bodyEntry.delete(0,'end')
+
+#Labels
+Label(master, text="Complaints Email Automation", font=('Calibri', 15)).grid(row=0, sticky=N)
+Label(master,
+      text="Hey Bennettian! Having some issue in hostel?\n  Just give me some details and your Mail will be sent. ",
+      font=('Calibri', 11)).grid(row=1, sticky=W, padx=5, pady=10)
+Label(master, text="Name", font=('Calibri', 11)).grid(row=2, sticky=W, padx=5)  # email
+Label(master, text="Enrollment no.", font=('Calibri', 11)).grid(row=3, sticky=W, padx=5) # Passwd
+Label(master, text="Outlook account\npassword", font=('Calibri', 11)).grid(row=4, sticky=W, padx=5) # to
+Label(master, text="Hostel block", font=('Calibri', 11)).grid(row=5, sticky=W, padx=5)  # subject
+Label(master, text="Room no.", font=('Calibri', 11)).grid(row=6, sticky=W, padx=5) # body
+Label(master, text="Mobile no.", font=('Calibri', 11)).grid(row=7, sticky=W, padx=5)
+Label(master, text="Your complaint\n(in brief)", font=('Calibri', 11)).grid(row=8, sticky=W, padx=5)
+Label(master, text='Please choose your complaint number from the list given :-').grid(row=9, sticky=W, padx=5)
+Label(master, text='Type 1 for Furniture related issue').grid(row=10, sticky=W, padx=5)
+Label(master, text='Type 2 for Electricity or appliance related issue').grid(row=11, sticky=W, padx=5)
+Label(master, text='Type 3 for Water related issue').grid(row=12, sticky=W, padx=5)
+Label(master, text='Type 4 for Housekeeping issue').grid(row=13, sticky=W, padx=5)
+Label(master, text='Type 5 for Wellness issue').grid(row=14, sticky=W, padx=5)
+Label(master, text='Type 6 for Collpoll issue').grid(row=15, sticky=W, padx=5)
+Label(master, text='Type 7 for Security issue').grid(row=16, sticky=W, padx=5)
+Label(master, text='Type 8 for Finance related issue').grid(row=17, sticky=W, padx=5)
+Label(master, text='Type 9 for Food & Laundary issue').grid(row=18, sticky=W, padx=5)
+Label(master, text='Type 10 for Transport issue').grid(row=19, sticky=W, padx=5)
+Label(master, text='Type 11 for IT issue').grid(row=20, sticky=W, padx=5)
+notif = Label(master, text="", font=('Calibri', 11), fg="red")
+notif.grid(row=22, sticky=S)
+
+#Storage
+temp_name = StringVar()
+name = temp_name
+
+temp_id = StringVar()
+iddd = temp_id
+
+temp_password = StringVar()
+psdw = temp_password
+
+temp_block = StringVar()
+bkl = temp_block
+
+temp_room = StringVar()
+rmt = temp_room
+
+temp_mobile = StringVar()
+cont = temp_mobile
+
+temp_body = StringVar()
+subj = temp_body
+
+temp_choose = StringVar()
+ni = temp_choose
+
+#Entries
+usernameEntry = Entry(master, textvariable = temp_name)
+usernameEntry.grid(row=2,column=0)
+
+passwordEntry = Entry(master, show="*", textvariable = temp_password)
+passwordEntry.grid(row=4,column=0)
+
+idEntry = Entry(master, textvariable = temp_id)
+idEntry.grid(row=3,column=0)
+
+blockEntry = Entry(master, textvariable = temp_block)
+blockEntry.grid(row=5,column=0)
+
+roomEntry = Entry(master, textvariable = temp_room)
+roomEntry.grid(row=6,column=0)
+
+mobEntry     = Entry(master, textvariable = temp_mobile)
+mobEntry.grid(row=7,column=0)
+
+bodyEntry     = Entry(master, textvariable = temp_body)
+bodyEntry.grid(row=8,column=0)
+
+chooseEntry = Entry(master, textvariable= temp_choose)
+chooseEntry.grid(sticky=W, row=21, column=0, padx=15, pady=10)
+
+
+#  main function
+def send():
+    try:
+        na = name.get()
+        idd = iddd.get()
+        psd = psdw.get()
+        bk = bkl.get()
+        rm = rmt.get()
+        con = cont.get()
+        sub = subj.get()
+        n = ni.get()
+        if na == "" or psd == "" or con == "" or idd == "" or bk == "" or rm == "" or sub == "" or n == "":
+            notif.config(text="All fields required", fg="red")
+            return
+        else:
+            if n == '1':
+                cc = ["bennetcomplaint@gmail.com"]
+                sender_email = idd + "@bennett.edu.in"
+                sender_password = psd
+                recipient_email = 'gptharshit.01@gmail.com'
+                subject = "Regarding Furniture issue"
+                message = f'''Dear Sir/Ma'am, <br>
+            I am {na}, from {bk} Room-{rm}.This is to inform you about {sub}.Kindly please look into the situation as soon as possible.<br>
+            Thank You<br>
+            {na}<br>
+            {idd}<br>
+            Contact:- +91{con}'''
+                send_email(sender_email, sender_password, recipient_email, cc, subject, message)
+                print("contact:- 8800018711")
+            elif n == '2':
+                cc = ["bennetcomplaint@gmail.com"]
+                sender_email = idd + "@bennett.edu.in"
+                sender_password = psd
+                recipient_email = 'gptharshit.01@gmail.com'
+                subject = "Regarding Electricity in hostel"
+                message = f'''Dear Sir/Ma'am, <br>
+            I am {na}, from {bk} Room-{rm}.This is to inform you about {sub}.Kindly please look into the situation as soon as possible.<br>
+                Thank You<br>
+            {na}<br>
+            {idd}<br>
+            Contact:- +91{con}'''
+                send_email(sender_email, sender_password, recipient_email, cc, subject, message)
+                print("contact:- 8800018713\n7827141884\n7834810959 ")
+            elif n == '3':
+                cc = ["bennetcomplaint@gmail.com"]
+                sender_email = idd + "@bennett.edu.in"
+                sender_password = psd
+                recipient_email = 'gptharshit.01@gmail.com'
+                subject = "Regarding Water issue"
+                message = f'''Dear Sir/Ma'am, <br>
+            I am {na}, from {bk} Room-{rm}.This is to inform you about {sub}.Kindly please look into the situation as soon as possible.<br>
+                Thank You<br>
+            {na}<br>
+            {idd}<br>
+            Contact:- +91{con}'''
+                send_email(sender_email, sender_password, recipient_email, cc, subject, message)
+                print("contact:- 8800018713\n7827141884\n7834810959 ")
+            elif n == '4':
+                cc = ["bennetcomplaint@gmail.com"]
+                sender_email = idd + "@bennett.edu.in"
+                sender_password = psd
+                recipient_email = 'gptharshit.01@gmail.com'
+                subject = "Regarding Housekeeping issue"
+                message = f'''Dear Sir/Ma'am, <br>
+            I am {na}, from {bk} Room-{rm}.This is to inform you about {sub}.Kindly please look into the situation as soon as possible.<br>
+                Thank You<br>
+            {na}<br>
+            {idd}<br>
+            Contact:- +91{con}'''
+                send_email(sender_email, sender_password, recipient_email, cc, subject, message)
+                print("Person1:-Mr.Rohit Sharma\nPerson2;- Mr.Sonu Kumar")
+                print("contact:- 6395059820\n9560444488\n7838578438")
+            elif n == '5':
+                cc = ["bennetcomplaint@gmail.com"]
+                sender_email = idd + "@bennett.edu.in"
+                sender_password = psd
+                recipient_email = 'gptharshit.01@gmail.com'
+                subject = "Regarding Wellness issue"
+                message = f'''Dear Sir/Ma'am, <br>
+            I am {na}, from {bk} Room-{rm}.This is to inform you about {sub}.Kindly please look into the situation as soon as possible.<br>
+                Thank You<br>
+            {na}<br>
+            {idd}<br>
+            Contact:- +91{con}'''
+                send_email(sender_email, sender_password, recipient_email, cc, subject, message)
+                print("contact:- 0120-7199500")
+            elif n == '6':
+                cc = ["bennetcomplaint@gmail.com"]
+                sender_email = idd + "@bennett.edu.in"
+                sender_password = psd
+                recipient_email = 'gptharshit.01@gmail.com'
+                subject = "Regarding Collpoll problem"
+                message = f'''Dear Sir/Ma'am, <br>
+            I am {na}, from {bk} Room-{rm}.This is to inform you about {sub}.Kindly please look into the situation as soon as possible.<br>
+                Thank You<br>
+            {na}<br>
+            {idd}<br>
+            Contact:- +91{con}'''
+                send_email(sender_email, sender_password, recipient_email, cc, subject, message)
+                print("Person- Mr. Saphal Anand")
+                print("contact:- 8448133531")
+            elif n == '7':
+                cc = ["bennetcomplaint@gmail.com"]
+                sender_email = idd + "@bennett.edu.in"
+                sender_password = psd
+                recipient_email = 'gptharshit.01@gmail.com'
+                subject = "Regarding Security issue"
+                message = f'''Dear Sir/Ma'am, <br>
+            I am {na}, from {bk} Room-{rm}.This is to inform you about {sub}.Kindly please look into the situation as soon as possible.<br>
+                Thank You<br>
+            {na}<br>
+            {idd}<br>
+            Contact:- +91{con}'''
+                send_email(sender_email, sender_password, recipient_email, cc, subject, message)
+                print("contact:- 8800018712")
+            elif n == '8':
+                cc = ["bennetcomplaint@gmail.com"]
+                sender_email = idd + "@bennett.edu.in"
+                sender_password = psd
+                recipient_email = 'gptharshit.01@gmail.com'
+                subject = "Regarding Finance problem"
+                message = f'''Dear Sir/Ma'am, <br>
+            I am {na}, from {bk} Room-{rm}.This is to inform you about {sub}.Kindly please look into the situation as soon as possible.<br>
+                Thank You<br>
+            {na}<br>
+            {idd}<br>
+            Contact:- +91{con}'''
+                send_email(sender_email, sender_password, recipient_email, cc, subject, message)
+                print("contact:- 8800018714\n8800018715")
+            elif n == '9':
+                cc = ["bennetcomplaint@gmail.com"]
+                sender_email = idd + "@bennett.edu.in"
+                sender_password = psd
+                recipient_email = 'gptharshit.01@gmail.com'
+                subject = "Regarding Food & Laundary issue"
+                message = f'''Dear Sir/Ma'am, <br>
+            I am {na}, from {bk} Room-{rm}.This is to inform you about {sub}.Kindly please look into the situation as soon as possible.<br>
+                Thank You<br>
+            {na}<br>
+            {idd}<br>
+            Contact:- +91{con}'''
+                send_email(sender_email, sender_password, recipient_email, cc, subject, message)
+            elif n == '10':
+                cc = ["bennetcomplaint@gmail.com"]
+                sender_email = idd + "@bennett.edu.in"
+                sender_password = psd
+                recipient_email = 'gptharshit.01@gmail.com'
+                subject = "Regarding Transport issue"
+                message = f'''Dear Sir/Ma'am, <br>
+            I am {na}, from {bk} Room-{rm}.This is to inform you about {sub}.Kindly please look into the situation as soon as possible.<br>
+                Thank You<br>
+            {na}<br>
+            {idd}<br>
+            Contact:- +91{con}'''
+                send_email(sender_email, sender_password, recipient_email, cc, subject, message)
+                print("Person;- Mr. Abhiman Swaroop")
+                print("contact:- 9536500395")
+            elif n == '11':
+                cc = ["bennetcomplaint@gmail.com"]
+                sender_email = idd + "@bennett.edu.in"
+                sender_password = psd
+                recipient_email = 'gptharshit.01@gmail.com'
+                subject = "Regarding IT issue"
+                message = f'''Dear Sir/Ma'am, <br>
+            I am {na}, from {bk} Room-{rm}.This is to inform you about {sub}.Kindly please look into the situation as soon as possible.<br>
+                Thank You<br>
+            {na}<br>
+            {idd}<br>
+            Contact:- +91{con}'''
+                send_email(sender_email, sender_password, recipient_email, cc, subject, message)
+            else:
+                pass
+    except:
+        notif.config(text="Error sending email", fg="red")
+
+#Buttons
+Button(master, text = "Send", command = send).grid(row=22,   sticky=W,  pady=15, padx=5)
+Button(master, text = "Reset", command = reset).grid(row=22,  sticky=W,  padx=45, pady=40)
+
+
+#Mainloop
+master.mainloop()
+
+
+
